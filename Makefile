@@ -2,11 +2,18 @@ FCNADDR=1000011e8
 TESTBIN=$(shell pwd)/test/ls
 SCRIPT=R4GhidraServer.java
 
+# Set Ghidra path - use GHIDRA_INSTALL_DIR if set, otherwise use snap
+ifdef GHIDRA_INSTALL_DIR
+    GHIDRA_HEADLESS=$(GHIDRA_INSTALL_DIR)/support/analyzeHeadless
+else
+    GHIDRA_HEADLESS=snap run ghidra.analyzeHeadless
+endif
+
 all:
 	$(MAKE) -C R4Ghidra
 
 oops:
-	analyzeHeadless . Test.gpr -import $(TESTBIN) -postScript $(SCRIPT) $(FCNADDR) -deleteProject
+	$(GHIDRA_HEADLESS) . Test.gpr -import $(TESTBIN) -postScript $(SCRIPT) $(FCNADDR) -deleteProject
 	r2 -caf -i ghidra-output.r2 $(TESTBIN)
 
 R2PM_BINDIR=$(shell r2pm -H R2PM_BINDIR)
